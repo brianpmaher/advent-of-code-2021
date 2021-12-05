@@ -8,8 +8,7 @@ const lineSegments = rawInputLines
             .map(rawPoint => rawPoint
                 .split(',')
                 .map(v => parseInt(v)))
-            .map(([x, y]) => ({ x, y })))
-    .filter(([pointA, pointB]) => pointA.x === pointB.x || pointA.y === pointB.y);
+            .map(([x, y]) => ({ x, y })));
 
 const numRows = 1000;
 const numColumns = 1000;
@@ -31,15 +30,14 @@ for (let i = 0; i < lineSegments.length; i++) {
         markPosition(currentCell.x, currentCell.y);
 
         // walk the current cell
-        if (deltaX > 0) {
+        if (deltaX > 0)
             currentCell.x++;
-        } else if (deltaX < 0) {
+        if (deltaX < 0)
             currentCell.x--;
-        } else if (deltaY > 0) {
+        if (deltaY > 0)
             currentCell.y++;
-        } else if (deltaY < 0) {
+        if (deltaY < 0)
             currentCell.y--;
-        }
     }
 
     markPosition(currentCell.x, currentCell.y);
