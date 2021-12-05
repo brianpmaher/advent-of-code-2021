@@ -94,30 +94,45 @@ function checkIfBoardIsWinner(board) {
     return false;
 }
 
+const remainingBoards = [...boards];
+// for each bingo number
 for (let i = 0; i < inputs.length; i++) {
     const bingoNumber = inputs[i];
 
     // mark all boards
     boards.forEach(board => markBoardWithNumber(board, bingoNumber));
 
-    // check all board for winner
-    const winningBoardIndex = boards.findIndex(board => checkIfBoardIsWinner(board));
+    if (remainingBoards.length > 1) {
+        // check all boards for winner
+        const winningIndices = [];
+        remainingBoards.forEach((board, boardIndex) => {
+            if (checkIfBoardIsWinner(board)) {
+                winningIndices.push(boardIndex);
+            }
+        });
 
-    if (winningBoardIndex >= 0) {
-        console.log('winning number', bingoNumber);
-        console.log('winning board index', winningBoardIndex);
-        const winningBoard = boards[winningBoardIndex];
-
-        const sumOfUnmarked = winningBoard.matrix
-            .reduce((sum, cell) => {
-                if (!cell.isMarked) {
-                    return sum + cell.value;
-                } else {
-                    return sum;
-                }
-            }, 0);
-        console.log('sum of unmarked', sumOfUnmarked);
-        console.log('final score', sumOfUnmarked * bingoNumber);
-        break;
+        // is there a winner
+        if (winningIndices.length > 0) {
+            for (let winningIndexIndex = winningIndices.length - 1; winningIndexIndex >= 0; winningIndexIndex--) {
+                const winningIndex = winningIndices[winningIndexIndex];
+                // remove the winning board from the remaining boards list
+                remainingBoards.splice(winningIndex, 1);
+            }
+        }
+    } else {
+        const remainingBoard = remainingBoards[0];
+        if (checkIfBoardIsWinner(remainingBoard)) {
+            const sumOfUnmarked = remainingBoard.matrix
+                .reduce((sum, cell) => {
+                    if (!cell.isMarked) {
+                        return sum + cell.value;
+                    } else {
+                        return sum;
+                    }
+                }, 0);
+            console.log('final score', sumOfUnmarked * bingoNumber);
+            break;
+        }
     }
 }
+
