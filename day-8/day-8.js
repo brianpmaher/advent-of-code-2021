@@ -3,9 +3,9 @@ const fs = require('fs');
 function parseInputFromFile(file) {
     return fs
         .readFileSync(file, 'utf8')
-        .split('\r\n')
+        .split('\n')
         .map(line => {
-            const [input, output] = line.split(' | ');
+            const [input, output] = line.replace('\r', '').split(' | ');
             return {
                 input: input.split(' '),
                 output: output.split(' '),
@@ -35,21 +35,22 @@ parseInputFromFile('./input.txt').forEach(({ input, output }) => {
     const eight = input.find(s => s.length === 7);
     const nine = input.find(s => s.length === 6 && s.containsAllChars(four));
     const three = input.find(s => s.length === 5 && s.containsAllChars(one));
-    const zero = input.find(s => s.length === 6 && s.containsAllChars(seven));
+    const zero = input.find(s => s.length === 6 && s.containsAllChars(seven) && s !== nine);
     const six = input.find(s => s.length === 6 && s !== nine && s !== zero);
     const five = input.find(s => s.length === 5 && s !== three && six.containsAllChars(s));
     const two = input.find(s => s.length === 5 && s !== three && s !== five);
 
-    output.forEach(entry => {
-        if (entry.length === one.length && entry.containsAllChars(one))
-            result++;
-        else if (entry.length === four.length && entry.containsAllChars(four))
-            result++;
-        else if (entry.length === seven.length && entry.containsAllChars(seven))
-            result++;
-        else if (entry.length === eight.length && entry.containsAllChars(eight))
-            result++;
+    let outputNumberStr = '';
+    const numberKeys = [zero, one, two, three, four, five, six, seven, eight, nine];
+    output.forEach(digitKey => {
+        const digit = numberKeys.findIndex((k) => {
+            if (!k)
+                console.log('it happened');
+            return digitKey.length === k.length && digitKey.containsAllChars(k)
+        });
+        outputNumberStr = outputNumberStr.concat(digit);
     });
+    result += parseInt(outputNumberStr);
 });
 
 console.log(result);
