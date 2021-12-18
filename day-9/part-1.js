@@ -41,4 +41,5 @@ let sum = 0;
 for (let i = 0; i < lowestPoints.length; i++)
     sum = sum + lowestPoints[i] + 1;
 
-console.log(sum);
+console.log('num low points', lowestPoints.length);
+console.log('result', sum);
