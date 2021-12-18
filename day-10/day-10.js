@@ -14,7 +14,16 @@ const symbolsCount = {
     '}': 0,
     '>': 0,
 };
+const symbolValues = {
+    ')': 1,
+    ']': 2,
+    '}': 3,
+    '>': 4,
+};
+const closingSequences = [];
 lines.forEach(line => {
+    symbolStack = [];
+
     for (let i = 0; i < line.length; i++) {
         const symbol = line[i];
 
@@ -23,20 +32,42 @@ lines.forEach(line => {
         } else if (closingSymbols.includes(symbol)) {
             const indexOfSymbol = closingSymbols.indexOf(symbol);
             const matchingOpeningSymbol = openingSymbols[indexOfSymbol];
+            const topOfStack = symbolStack.pop();
 
-            if (symbolStack.pop() !== matchingOpeningSymbol) {
-                symbolsCount[symbol]++;
-            }
+            // corrupt line, move on to next line
+            if (topOfStack !== matchingOpeningSymbol) return;
         }
     }
 
-    symbolStack = [];
+    if (symbolStack.length > 0) {
+        let closingSequence = '';
+        for (let i = symbolStack.length - 1; i >= 0; i--) {
+            const openingSymbol = symbolStack[i];
+            const indexOfSymbol = openingSymbols.indexOf(openingSymbol);
+            const matchingClosingSymbol = closingSymbols[indexOfSymbol];
+            closingSequence += matchingClosingSymbol;
+        }
+        closingSequences.push(closingSequence);
+    }
 });
 
-const totalScore =
-    symbolsCount[')'] * 3 +
-    symbolsCount[']'] * 57 +
-    symbolsCount['}'] * 1197 +
-    symbolsCount['>'] * 25137;
+console.log(closingSequences);
 
-console.log('totalScore', totalScore);
+const scores = closingSequences.map(closingSequence => {
+    let totalScore = 0;
+    for (let i = 0; i < closingSequence.length; i++) {
+        const symbol = closingSequence[i];
+        totalScore = totalScore * 5 + symbolValues[symbol];
+    }
+    return totalScore;
+});
+
+console.log('scores', scores);
+
+const sortedScores = scores.sort((a, b) => a - b);
+
+console.log('sorted scores', sortedScores);
+
+const middleScore = sortedScores[Math.floor(sortedScores.length / 2)];
+
+console.log('middle score', middleScore);
