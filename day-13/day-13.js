@@ -38,14 +38,22 @@ function printPaper() {
     console.log('paper data' + line);
 }
 
+function printFile() {
+    let line = '';
+    for (let i = 0; i < paperData.length; i++) {
+        if (i % width === 0)
+            line += '\n';
+        line += paperData[i];
+    }
+    fs.writeFileSync('output.txt', line, 'utf8');
+}
+
 rawFoldInstructions
     .split('\r\n')
     .map(str => str.replace('fold along ', ''))
     .map(str => str.split('='))
     .map(([axis, valStr]) => [axis, parseInt(valStr)])
     .forEach(([foldAxis, foldValue], i) => {
-        if (i > 0) return;
-
         if (foldAxis === 'x') {
             for (let x = foldValue + 1; x <= maxX; x++) {
                 for (let y = 0; y <= maxY; y++) {
@@ -69,5 +77,4 @@ rawFoldInstructions
         }
     });
 
-const dotsCount = paperData.reduce((sum, cell) => sum + (cell === '#' ? 1 : 0), 0);
-console.log(dotsCount);
+printFile();
