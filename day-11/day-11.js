@@ -70,16 +70,8 @@ function flash(octopus) {
     }
 }
 
-let outputStr = '';
-for (let y = 0; y < length; y++) {
-    outputStr += '\n';
-    for (let x = 0; x < width; x++)
-        outputStr += octopuses[y * width + x].energyLevel;
-}
-console.log('\n');
-console.log('before any steps', outputStr);
-
-for (let stepCount = 0; stepCount < 100; stepCount++) {
+let stepCount = 1;
+while (true) {
     octopuses.forEach(octopus => octopus.hasFlashedThisStep = false);
 
     for (let i = 0; i < octopuses.length; i++) {
@@ -94,14 +86,10 @@ for (let stepCount = 0; stepCount < 100; stepCount++) {
             flash(octopus);
     }
 
-    let outputStr = '';
-    for (let y = 0; y < length; y++) {
-        outputStr += '\n';
-        for (let x = 0; x < width; x++)
-            outputStr += octopuses[y * width + x].energyLevel;
+    if (octopuses.every(octopus => octopus.hasFlashedThisStep)) {
+        console.log('all octopuses flashed on step: ' + stepCount);
+        break;
     }
-    console.log('\n');
-    console.log(`step ${stepCount + 1}`, outputStr);
-}
 
-console.log('num flashes', numFlashes);
+    stepCount++;
+}
