@@ -18,11 +18,12 @@ instructionPairs.forEach(([a, b]) => {
     if (a !== 'start' && b !== 'end' && !connectionMap[b].includes(a))
         connectionMap[b].push(a);
 });
-console.log(connectionMap);
 
 function makeTree(key, visitedSmallCaves = []) {
     const tree = {};
-    let connectedCaves = connectionMap[key].filter(cave => cave === 'end' || !visitedSmallCaves.includes(cave));
+    const visitedSmallCavesHasDuplicates = visitedSmallCaves.some(cave => visitedSmallCaves.filter(c => c === cave).length > 1);
+    let connectedCaves = connectionMap[key]
+        .filter(cave => cave === 'end' || !visitedSmallCaves.includes(cave) || !visitedSmallCavesHasDuplicates);
 
     if (connectedCaves.length === 0)
         return 'dead-end';
@@ -37,22 +38,12 @@ function makeTree(key, visitedSmallCaves = []) {
     return tree;
 }
 const tree = { 'start': makeTree('start') };
-console.log(tree);
 
-function buildPaths(tree) {
-    const paths = [];
-    const caves = Object.keys(tree);
-
-    for (cave of caves) {
-        if (typeof tree[cave] === 'string')
-            paths.push(cave);
-        else {
-            const childPaths = buildPaths(tree[cave]).map(path => path === 'end' ? path : `${cave},${path}`);
-            paths.push(...childPaths);
-        }
-    }
-
-    return paths;
+function countEnds(tree) {
+    if (tree === 'dead-end') return 0;
+    if (tree === 'end')      return 1;
+    return Object.values(tree).reduce((sum, subtree) => sum + countEnds(subtree), 0);
 }
-const paths = buildPaths(tree).filter(path => path.endsWith('end'));
-console.log(paths.length);
+const numEnds = countEnds(tree);
+
+console.log('num ends', numEnds);
